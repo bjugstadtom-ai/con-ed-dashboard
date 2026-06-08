@@ -1,0 +1,5 @@
+# Texas A&M S&C — Continuing Education Dashboard
+# Static site. No build step; publish the repo root.
+[build]
+  publish = "."
+  command = ""

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&C Continuing Education Dashboard — Texas A&M</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Work+Sans:wght@300;400;600;700&family=Open+Sans:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --maroon:#500000; --deep-maroon:#3C0000; --light-maroon:#732F2F;
+    --near-black:#202020; --dark-gray:#3E3E3E; --med-gray:#707070; --light-gray:#D1D1D1; --cream:#D6D3C4;
+    --bg:#ffffff; --panel:#ffffff; --line:#e3e0da;
+    --shadow:0 1px 3px rgba(32,32,32,.06),0 10px 28px rgba(80,0,0,.06);
+    --head:'Oswald',sans-serif; --display:'Work Sans',sans-serif; --body:'Open Sans',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);background:var(--bg);color:var(--dark-gray);line-height:1.55;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 22px 64px}
+
+  header.hero{background:var(--maroon);background:linear-gradient(135deg,var(--maroon) 0%,var(--deep-maroon) 100%);color:#fff;padding:30px 0;border-bottom:4px solid var(--deep-maroon)}
+  .hero .wrap{padding-bottom:0}
+  .logo{height:24px;width:auto;display:block;margin-bottom:18px;opacity:.96}
+  .eyebrow{font-family:var(--head);font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.85}
+  h1{font-family:var(--head);font-weight:700;text-transform:uppercase;font-size:34px;letter-spacing:.5px;line-height:1.04;margin:8px 0 10px}
+  .sub{font-family:var(--body);font-size:15px;opacity:.94;max-width:760px}
+  .scanline{display:flex;align-items:center;gap:9px;margin-top:18px;font-family:var(--head);font-weight:400;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+  .dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.22)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:-26px 0 22px;position:relative;z-index:2}
+  .stat{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--maroon);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow)}
+  .stat .n{font-family:var(--head);font-weight:700;font-size:30px;color:var(--maroon);line-height:1}
+  .stat .l{font-family:var(--body);font-size:12px;color:var(--med-gray);margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:var(--cream);border-radius:10px;padding:11px 16px;margin-bottom:18px;font-size:12.5px;color:var(--near-black)}
+  .legend b{font-family:var(--head);text-transform:uppercase;letter-spacing:.06em;font-size:11.5px}
+  .lg{display:flex;align-items:center;gap:7px}
+  .lg .sdot{width:9px;height:9px;border-radius:50%}
+  .sdot.confirmed{background:var(--maroon)}
+  .sdot.tentative{background:#fff;border:1.5px solid var(--med-gray)}
+  .sdot.forecast{background:var(--light-maroon);box-shadow:0 0 0 2.5px rgba(115,47,47,.25)}
+
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:var(--shadow);margin-bottom:22px}
+  .search{width:100%;padding:12px 14px;border:1px solid var(--light-gray);border-radius:8px;font-size:15px;font-family:var(--body);background:#fff;color:var(--near-black)}
+  .search:focus{outline:none;border-color:var(--maroon);box-shadow:0 0 0 3px rgba(80,0,0,.12)}
+  .filters{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;align-items:center}
+  .flabel{font-family:var(--head);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--med-gray);font-weight:600;margin-right:4px;min-width:74px}
+  .chip{font-family:var(--head);font-weight:400;letter-spacing:.04em;border:1px solid var(--light-gray);background:#fff;color:var(--dark-gray);padding:6px 13px;border-radius:999px;font-size:12.5px;cursor:pointer;transition:all .12s ease;white-space:nowrap;text-transform:uppercase}
+  .chip:hover{border-color:var(--maroon)}
+  .chip.active{background:var(--maroon);color:#fff;border-color:var(--maroon)}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+  .count{font-family:var(--body);font-size:13px;color:var(--med-gray)}
+  .count b{color:var(--near-black)}
+  select.sort{font-family:var(--head);text-transform:uppercase;letter-spacing:.04em;padding:9px 12px;border:1px solid var(--light-gray);border-radius:8px;font-size:12.5px;background:#fff;color:var(--dark-gray);cursor:pointer}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:17px 17px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .12s ease,box-shadow .12s ease;border-top:3px solid var(--maroon)}
+  .card.is-forecast{border-top-color:var(--light-maroon)}
+  .card.is-tentative{border-top-color:var(--med-gray)}
+  .card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(32,32,32,.09),0 18px 40px rgba(80,0,0,.10)}
+  .card .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-family:var(--head);font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:4px 9px;border-radius:5px}
+  .tag.national{background:var(--maroon);color:#fff}
+  .tag.regional{background:var(--cream);color:var(--maroon)}
+  .tag.online{background:var(--light-gray);color:var(--near-black)}
+  .tag.cert{background:var(--light-maroon);color:#fff}
+  .tag.disc{background:#f2efe9;color:var(--med-gray)}
+  .status{font-family:var(--head);font-size:10.5px;font-weight:400;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;color:var(--med-gray)}
+  .status .sdot{width:8px;height:8px;border-radius:50%}
+  .status.confirmed{color:var(--maroon)} .status.confirmed .sdot{background:var(--maroon)}
+  .status.tentative{color:var(--med-gray)} .status.tentative .sdot{background:#fff;border:1.5px solid var(--med-gray)}
+  .status.forecast{color:var(--light-maroon)} .status.forecast .sdot{background:var(--light-maroon);box-shadow:0 0 0 2.5px rgba(115,47,47,.22)}
+  .ctitle{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.2px;line-height:1.22;margin-bottom:5px;color:var(--near-black)}
+  .cwhen{font-family:var(--head);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:12.5px;color:var(--maroon);margin-bottom:11px}
+  .meta{display:grid;grid-template-columns:auto 1fr;gap:5px 11px;font-size:12.5px;margin-bottom:11px;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .meta .k{font-family:var(--head);text-transform:uppercase;letter-spacing:.05em;font-size:10.5px;color:var(--med-gray);font-weight:600;white-space:nowrap;padding-top:1px}
+  .meta .v{color:var(--near-black)}
+  .meta .v.hist{color:var(--light-maroon)}
+  .syn{font-size:13.5px;color:var(--dark-gray);margin-bottom:10px;flex:1}
+  .who{font-size:12px;color:var(--med-gray);margin-bottom:14px}
+  .who b{font-family:var(--head);text-transform:uppercase;letter-spacing:.05em;font-size:10.5px;color:var(--near-black);font-weight:600}
+  .cfoot{display:flex;justify-content:flex-end;align-items:center;margin-top:auto}
+  .btn{font-family:var(--head);font-weight:600;text-transform:uppercase;letter-spacing:.06em;background:var(--maroon);color:#fff;text-decoration:none;font-size:12px;padding:9px 15px;border-radius:7px;white-space:nowrap;transition:background .12s ease}
+  .btn:hover{background:var(--deep-maroon)}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--med-gray);font-size:15px}
+  footer{margin-top:32px;padding-top:20px;border-top:2px solid var(--maroon);font-size:12.5px;color:var(--med-gray);line-height:1.7}
+  footer a{color:var(--maroon);font-weight:600}
+  .gigem{font-family:var(--head);text-transform:uppercase;letter-spacing:.12em;color:var(--maroon);font-weight:600}
+
+  /* view toggle */
+  .viewtoggle{display:flex;border:1px solid var(--light-gray);border-radius:8px;overflow:hidden}
+  .vbtn{font-family:var(--head);text-transform:uppercase;letter-spacing:.04em;font-size:12px;padding:8px 14px;background:#fff;color:var(--dark-gray);border:none;cursor:pointer}
+  .vbtn+.vbtn{border-left:1px solid var(--light-gray)}
+  .vbtn.active{background:var(--maroon);color:#fff}
+
+  /* calendar */
+  .cal-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cal-title{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:20px;color:var(--maroon);min-width:210px;text-align:center}
+  .cal-btn{font-family:var(--head);text-transform:uppercase;letter-spacing:.04em;font-size:12px;padding:8px 13px;border:1px solid var(--light-gray);background:#fff;color:var(--dark-gray);border-radius:8px;cursor:pointer}
+  .cal-btn:hover{border-color:var(--maroon)}
+  .cal-today{margin-left:auto;background:var(--cream)}
+  .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+  .cal-dowc{font-family:var(--head);text-transform:uppercase;letter-spacing:.06em;font-size:11px;color:var(--med-gray);text-align:center;font-weight:600}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-cell{min-height:112px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px}
+  .cal-cell.blank{background:transparent;border:none}
+  .cal-cell.today{border-color:var(--maroon);box-shadow:0 0 0 2px rgba(80,0,0,.12)}
+  .cal-daynum{font-family:var(--head);font-size:12px;color:var(--med-gray);font-weight:600;margin-bottom:4px}
+  .cal-cell.today .cal-daynum{color:var(--maroon)}
+  .cal-evs{display:flex;flex-direction:column;gap:3px}
+  .cal-ev{display:block;font-size:10.5px;line-height:1.25;padding:3px 6px;border-radius:5px;background:var(--maroon);color:#fff;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cal-ev:hover{background:var(--deep-maroon)}
+  .cal-ev.forecast{background:#fff;color:var(--light-maroon);border:1px dashed var(--light-maroon)}
+  .cal-ev.tentative{background:#f2efe9;color:var(--near-black);border:1px solid var(--light-gray)}
+  .cal-ongoing{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+  .cal-og-head{font-family:var(--head);text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--med-gray);font-weight:600;margin-bottom:10px}
+  .cal-og-list{display:flex;flex-wrap:wrap;gap:8px}
+  .cal-og-item{font-size:12px;padding:6px 11px;border-radius:999px;background:var(--cream);color:var(--maroon);text-decoration:none;border:1px solid transparent}
+  .cal-og-item:hover{border-color:var(--maroon)}
+  .cal-og-item.forecast{background:#fff;color:var(--light-maroon);border:1px dashed var(--light-maroon)}
+  .cal-og-item.tentative{background:#f2efe9;color:var(--near-black)}
+
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.grid{grid-template-columns:1fr}.flabel{min-width:0;width:100%}#calendar{overflow-x:auto}.cal-dow,.cal-grid{min-width:620px}.cal-cell{min-height:84px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 821.31 62" aria-label="Texas A&amp;M Athletics"><g fill="#fff"><polygon points=".55 .1 45.73 .1 45.73 18.83 34.86 18.83 34.86 10.27 29.54 10.27 29.54 51.6 32.85 51.6 32.85 61.77 13.42 61.77 13.42 51.6 16.74 51.6 16.74 10.27 11.42 10.27 11.42 18.83 .55 18.83 .55 .1 .55 .1"/><polygon points="51.74 61.77 51.74 51.6 55.05 51.6 55.05 10.27 51.74 10.27 51.74 .1 88.05 .1 88.05 18.83 77.1 18.83 77.1 10.2 67.85 10.27 67.85 25.54 79.72 25.54 79.72 35.72 67.85 35.72 67.85 51.6 77.18 51.6 77.18 43.12 88.05 43.12 88.05 61.77 51.74 61.77 51.74 61.77"/><polygon points="119.97 61.77 119.97 51.6 122.74 51.6 116.81 40.73 110.48 51.6 113.26 51.6 113.26 61.77 95.76 61.77 95.76 51.6 98.22 51.6 110.71 31.48 97.99 10.27 95.76 10.27 95.76 .1 115.03 .1 115.03 10.27 112.49 10.27 117.96 20.68 123.82 10.27 121.28 10.27 121.28 .1 139.01 .1 139.01 10.27 136.77 10.27 124.13 30.24 136.54 51.6 139.01 51.6 139.01 61.77 119.97 61.77 119.97 61.77"/><path d="M166.3,9.66h-.31l-2.7,21.9h5.71l-2.7-21.9h0ZM168.61,61.77v-10.18h2.85l-1.23-9.87h-8.17l-1.23,9.87h2.78v10.18h-17.66v-10.18h3.01l5.86-41.32-3.47.08V.1h30.07v10.18h-2.85l5.55,41.32h3.01v10.18h-18.5Z"/><polygon points="224.35 61.77 201.14 61.77 194.82 55.53 194.82 43.12 207.62 43.12 207.62 51.6 217.72 51.6 217.72 41.81 194.82 25.23 194.82 6.42 201.14 .1 224.35 .1 230.67 6.42 230.67 18.83 217.72 18.83 217.72 10.27 207.62 10.27 207.62 17.98 230.67 34.48 230.67 55.45 224.35 61.77 224.35 61.77"/><path d="M281.09,9.66h-.31l-2.7,21.9h5.7l-2.7-21.9h0ZM283.4,61.77v-10.18h2.85l-1.23-9.87h-8.17l-1.23,9.87h2.78v10.18h-17.66v-10.18h3.01l5.86-41.32-3.47.08V.1h30.07v10.18h-2.85l5.55,41.32h3.01v10.18h-18.5Z"/><polygon points="381.54 61.77 381.54 51.6 384 51.6 384 21.99 371.59 46.2 359.26 21.99 359.26 51.6 361.72 51.6 361.72 61.77 344.99 61.77 344.99 51.6 348 51.6 348 10.27 344.99 10.27 344.99 .1 360.49 .1 372.05 24.69 383.46 .1 398.27 .1 398.27 10.27 395.26 10.27 395.26 51.6 398.27 51.6 398.27 61.77 381.54 61.77 381.54 61.77"/><path d="M322.54,17.14h-4.14v5.61l1.26,1.72,2.88-1.72v-5.61h0ZM316.58,33.96l-.71.4v9.85h3.64l2.07-2.93-5-7.32h0ZM328.04,50.88l-1.77-2.58-1.72,2.58h-12.17l-4.14-4.14v-15.66l4.65-2.68-2.88-4.19v-9.6l4.14-4.14h12.73l4.14,4.14v10.96l-7.53,4.34,2.63,4.04,3.23-5.05h6.57v6.67h-1.92l-3.23,5.2,6.82,10.1h-9.55Z"/><path d="M406.88,55.14c.87,0,1.61.33,2.24.95.62.61.92,1.36.92,2.22s-.3,1.64-.92,2.26c-.61.61-1.37.93-2.24.93s-1.62-.31-2.25-.93c-.61-.62-.91-1.38-.91-2.26s.3-1.61.92-2.22c.62-.62,1.36-.95,2.24-.95M410.57,58.31c0-1.01-.37-1.87-1.09-2.59-.71-.72-1.58-1.08-2.6-1.08s-1.88.36-2.6,1.08c-.72.71-1.06,1.57-1.06,2.59s.35,1.9,1.06,2.61c.71.72,1.58,1.08,2.6,1.08s1.89-.36,2.6-1.08c.72-.72,1.09-1.59,1.09-2.61M407.85,57.52c0,.31-.13.53-.42.63-.15.07-.38.08-.68.08h-.65v-1.45h.62c.39,0,.68.06.85.15.18.11.27.29.27.59M405.39,56.29v4.03h.7v-1.58h.58c.38,0,.64.04.79.12.26.16.39.46.39.93v.32l.02.13s0,.02,0,.03c0,.02,0,.03,0,.05h.67l-.02-.06s-.03-.1-.03-.2c0-.1-.02-.2-.02-.29v-.29c0-.2-.06-.42-.22-.62-.15-.21-.38-.35-.7-.4.26-.04.46-.11.6-.19.26-.17.39-.44.39-.8,0-.51-.21-.84-.64-1.02-.22-.1-.6-.15-1.1-.15h-1.42Z"/><path d="M448.87,9.59h-.31l-2.7,21.95h5.72l-2.7-21.95h0ZM451.19,61.84v-10.2h2.86l-1.23-9.89h-8.2l-1.23,9.89h2.78v10.2h-17.7v-10.2h3.01l5.87-41.43-3.48.08V0h30.15v10.2h-2.86l5.57,41.43h3.02v10.2h-18.55Z"/><polygon points="474.76 0 520.06 0 520.06 18.78 509.16 18.78 509.16 10.2 503.83 10.2 503.83 51.64 507.15 51.64 507.15 61.84 487.67 61.84 487.67 51.64 491 51.64 491 10.2 485.67 10.2 485.67 18.78 474.76 18.78 474.76 0 474.76 0"/><polygon points="549.05 61.84 549.05 51.64 552.07 51.64 552.07 36.02 542.17 36.02 542.17 51.64 545.19 51.64 545.19 61.84 526.09 61.84 526.09 51.64 529.42 51.64 529.42 10.2 526.09 10.2 526.09 0 545.19 0 545.19 10.2 542.17 10.2 542.17 25.82 552.07 25.82 552.07 10.2 549.05 10.2 549.05 0 568.22 0 568.22 10.2 564.9 10.2 564.9 51.64 568.22 51.64 568.22 61.84 549.05 61.84 549.05 61.84"/><polygon points="575.18 61.84 575.18 51.64 578.5 51.64 578.5 10.2 575.18 10.2 575.18 0 594.66 0 594.66 10.2 591.33 10.2 591.33 51.64 600.69 51.64 600.69 43.13 611.59 43.13 611.59 61.84 575.18 61.84 575.18 61.84"/><polygon points="618.54 61.84 618.54 51.64 621.87 51.64 621.87 10.2 618.54 10.2 618.54 0 654.95 0 654.95 18.78 643.97 18.78 643.97 10.13 634.7 10.2 634.7 25.51 646.6 25.51 646.6 35.71 634.7 35.71 634.7 51.64 644.05 51.64 644.05 43.13 654.95 43.13 654.95 61.84 618.54 61.84 618.54 61.84"/><polygon points="662.68 0 707.98 0 707.98 18.78 697.08 18.78 697.08 10.2 691.75 10.2 691.75 51.64 695.07 51.64 695.07 61.84 675.59 61.84 675.59 51.64 678.91 51.64 678.91 10.2 673.58 10.2 673.58 18.78 662.68 18.78 662.68 0 662.68 0"/><polygon points="714.01 61.84 714.01 51.64 717.33 51.64 717.33 10.2 714.01 10.2 714.01 0 733.49 0 733.49 10.2 730.17 10.2 730.17 51.64 733.49 51.64 733.49 61.84 714.01 61.84 714.01 61.84"/><polygon points="769.97 61.84 747.56 61.84 741.22 55.5 741.22 6.34 747.56 0 769.97 0 776.31 6.34 776.31 18.78 763.56 18.78 763.56 10.2 753.97 10.2 753.97 51.64 763.56 51.64 763.56 43.13 776.31 43.13 776.31 55.5 769.97 61.84 769.97 61.84"/><polygon points="814.42 61.84 791.15 61.84 784.82 55.58 784.82 43.13 797.65 43.13 797.65 51.64 807.77 51.64 807.77 41.82 784.82 25.2 784.82 6.34 791.15 0 814.42 0 820.76 6.34 820.76 18.78 807.77 18.78 807.77 10.2 797.65 10.2 797.65 17.93 820.76 34.48 820.76 55.5 814.42 61.84 814.42 61.84"/></g></svg>
+    <div class="eyebrow">Strength &amp; Conditioning</div>
+    <h1>Continuing Education Dashboard</h1>
+    <div class="sub">A running calendar of S&amp;C and sport-science continuing-education opportunities — combining confirmed events with forecasts built from the prior 12 months, since many conferences announce late.</div>
+    <div class="scanline"><span class="dot"></span><span id="scanmeta">Last web scan: June 3, 2026 &nbsp;·&nbsp; 60+ opportunities tracked</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input class="search" id="search" type="text" placeholder="Search events, presenters, cities, topics…" />
+    <div class="filters">
+      <span class="flabel">Type <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--light-gray)">· pick any</span></span>
+      <button class="chip active" data-f="type" data-v="all">All</button>
+      <button class="chip" data-f="type" data-v="National Conference">National</button>
+      <button class="chip" data-f="type" data-v="Regional / Clinic">Regional / Clinic</button>
+      <button class="chip" data-f="type" data-v="Online / Course">Online / Course</button>
+      <button class="chip" data-f="type" data-v="Certification">Certification</button>
+    </div>
+    <div class="filters">
+      <span class="flabel">Focus <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--light-gray)">· pick any</span></span>
+      <button class="chip active" data-f="disc" data-v="all">All</button>
+      <button class="chip" data-f="disc" data-v="S&C">S&amp;C</button>
+      <button class="chip" data-f="disc" data-v="Sport Science">Sport Science</button>
+      <button class="chip" data-f="disc" data-v="Speed">Speed</button>
+      <button class="chip" data-f="disc" data-v="Weightlifting">Weightlifting</button>
+      <button class="chip" data-f="disc" data-v="Method / Movement">Method / Movement</button>
+      <button class="chip" data-f="disc" data-v="Nutrition">Nutrition</button>
+      <button class="chip" data-f="disc" data-v="Sports Med / AT">Sports Med / AT</button>
+      <button class="chip" data-f="disc" data-v="Scholastic">Scholastic / HS</button>
+    </div>
+    <div class="filters">
+      <span class="flabel">Region <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--light-gray)">· pick any</span></span>
+      <button class="chip active" data-f="region" data-v="all">All</button>
+      <button class="chip" data-f="region" data-v="Texas">Texas</button>
+      <button class="chip" data-f="region" data-v="South">South / Nearby</button>
+      <button class="chip" data-f="region" data-v="National">National</button>
+      <button class="chip" data-f="region" data-v="Online">Online</button>
+    </div>
+    <div class="filters">
+      <span class="flabel">Status <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--light-gray)">· pick any</span></span>
+      <button class="chip active" data-f="status" data-v="all">All</button>
+      <button class="chip" data-f="status" data-v="confirmed">Confirmed</button>
+      <button class="chip" data-f="status" data-v="tentative">Tentative</button>
+      <button class="chip" data-f="status" data-v="forecast">Forecast</button>
+    </div>
+    <div class="toolbar">
+      <div class="viewtoggle">
+        <button class="vbtn active" data-view="list">▦ List</button>
+        <button class="vbtn" data-view="calendar">▤ Calendar</button>
+      </div>
+      <div class="count" id="count"></div>
+      <select class="sort" id="sort">
+        <option value="date">Sort: Soonest first</option>
+        <option value="date-desc">Sort: Latest first</option>
+        <option value="price">Sort: Lowest price</option>
+        <option value="title">Sort: A → Z</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">No events match your filters. Try clearing the search or selecting “All”.</div>
+
+  <div id="calendar" style="display:none">
+    <div class="legend" style="margin-bottom:16px">
+      <b>Status key:</b>
+      <span class="lg"><span class="sdot confirmed"></span>Confirmed — dates posted</span>
+      <span class="lg"><span class="sdot tentative"></span>Tentative — partial details</span>
+      <span class="lg"><span class="sdot forecast"></span>Forecast — projected from last year; watch the source / social</span>
+    </div>
+    <div class="cal-nav">
+      <button class="cal-btn" id="calPrev">‹ Prev</button>
+      <div class="cal-title" id="calTitle"></div>
+      <button class="cal-btn" id="calNext">Next ›</button>
+      <button class="cal-btn cal-today" id="calToday">Today</button>
+    </div>
+    <div class="cal-dow" id="calDow"></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-ongoing" id="calOngoing"></div>
+  </div>
+
+  <footer>
+    <b>About this dashboard.</b> Events are gathered from official association/host sites and, for late-announcing private seminars, their social channels (Instagram / X / LinkedIn). Prices and dates change — always confirm on the registration page before booking. <b>Forecast</b> entries are projected from the prior 12 months and are not yet officially posted; use them to pre-block budget and travel, then watch the linked source. Refreshed automatically each month by a scheduled web scan.<br>
+    Built for the Texas A&amp;M Strength &amp; Conditioning staff. Data current as of <span id="footdate">June 3, 2026</span>. &nbsp;<span class="gigem">Gig 'Em</span>
+  </footer>
+</div>
+
+<script>
+const EVENTS = [
+{title:"NSCA National Conference (NSCACon)",type:"National Conference",region:"South",disc:"S&C",start:"2026-07-08",dateText:"July 8–11, 2026",location:"New Orleans, LA + Online",lastHeld:"Jul 2025 — Kansas City, MO",price:"Member $435 / Non-member $590 (early bird); Student from $260",priceNum:435,ceu:"Up to 3.0 (+1.0 bonus)",regOpens:"Open now",regCloses:"In-person closes Wed of conf. 5pm CT; online Thu 5pm CT",status:"confirmed",syn:"NSCA's flagship event — 60+ sessions across applied performance, sport science, nutrition, research, and professional development, plus hands-on labs. New Orleans makes it unusually low-travel from Texas.",who:"Keynotes: William J. Kraemer, PhD and Brett Bartholomew, MSEd, CSCS.",url:"https://www.nsca.com/events/conferences/NSCAcon/"},
+{title:"NSCA National Conference 2027 (Save the Date)",type:"National Conference",region:"National",disc:"S&C",start:"2027-07-07",dateText:"July 7–10, 2027",location:"Las Vegas, NV + Online",lastHeld:"",price:"TBA (similar tiered pricing)",priceNum:99999,ceu:"Up to 3.0 CEUs",regOpens:"~Late 2026 / early 2027",regCloses:"Week of conf.",status:"confirmed",syn:"Next year's NSCACon moves to Las Vegas. Flagged now for budget and travel planning.",who:"Lineup announced in 2027.",url:"https://www.nsca.com/events/national-conferences/"},
+{title:"NSCA Tactical Annual Training (TSAC)",type:"National Conference",region:"National",disc:"S&C",start:"2026-08-17",dateText:"Aug 17–20, 2026 (Orlando) · 2027: Aug 23–26, San Antonio, TX",location:"Orlando, FL + Online (2027 San Antonio, TX)",lastHeld:"2025",price:"Member $520 / early bird tiers from $470",priceNum:520,ceu:"2.0 Category A",regOpens:"Open now",regCloses:"In-person closes Tue of conf. week",status:"confirmed",syn:"Premier evidence-based tactical human-performance event for military, law enforcement, fire/EMS, and allied-health pros. The 2027 edition lands in San Antonio — close to home.",who:"2026 keynote: Maj. Gen. Colin Tuley (U.S. Army Maneuver Center of Excellence).",url:"https://www.nsca.com/tactical-training/"},
+{title:"NSCA Performance Summits (4 themes)",type:"Regional / Clinic",region:"Texas",disc:"Sport Science",start:"2027-03-27",dateText:"~Late March 2027 (forecast)",location:"University campuses — incl. UT Austin, TX",lastHeld:"Mar 28, 2026 — UT Austin + 3 campuses",price:"~$115 member / $135 non-member (early bird)",priceNum:115,ceu:"0.8 CEUs each",regOpens:"~Early 2027",regCloses:"Day of event",status:"forecast",syn:"Four simultaneous one-day summits (Performance Science Integration, Athleticism for Life, Endurance Athlete, Overhead Athlete). The Performance Science track was hosted at UT Austin in 2026 — a strong low-travel Texas option to watch for 2027.",who:"2026 incl. Bo Sandoval, Nick Ratamess, Donnie Maib (UT), Jay Dawes.",url:"https://www.nsca.com/events/Summits/"},
+{title:"NSCA Personal Trainers Conference (PTCon)",type:"Online / Course",region:"Online",disc:"S&C",start:"2026-10-27",dateText:"Oct 27–30, 2026",location:"Online / Virtual",lastHeld:"2024 (skipped 2025)",price:"TBA (early reg ~mid-July 2026)",priceNum:99999,ceu:"2.0 Category A",regOpens:"~Mid-July 2026",regCloses:"During event",status:"tentative",syn:"Virtual conference for personal trainers and fitness professionals, returning in 2026 after a one-year gap. A convenient online CEU block.",who:"Typical: NSCA personal-training and fitness educators.",url:"https://www.nsca.com/events/national-conferences/"},
+{title:"NSCA Texas State Clinic",type:"Regional / Clinic",region:"Texas",disc:"S&C",start:"2026-10-24",dateText:"~Late October 2026 (forecast)",location:"Texas (host TBA; 2025 = Tarleton State, Crowley)",lastHeld:"Oct 24–25, 2025 — Tarleton State Univ., Crowley, TX",price:"Member $135 / Student $30 / Non-member $155 (2025)",priceNum:135,ceu:"~1.2 Category A",regOpens:"~Late summer 2026",regCloses:"Day of event",status:"forecast",syn:"One of the highest-value state clinics — a two-day Texas slate heavy on VBT, sport science, and tactical, with a poster session. Easiest big-CEU win with little travel.",who:"2025 incl. Bryan Mann, Travis Triplett, Tim Suchomel; hosted by Drew Gonzalez (Sam Houston).",url:"https://www.nsca.com/events/state-and-regional/"},
+{title:"NSCA Oklahoma State Clinic",type:"Regional / Clinic",region:"South",disc:"S&C",start:"2026-10-03",dateText:"October 3, 2026",location:"Edmond, OK",lastHeld:"2025",price:"~Member $95–135 / Student ~$30",priceNum:115,ceu:"~0.6–0.8 Category A",regOpens:"~Late summer 2026",regCloses:"Day of event",status:"tentative",syn:"Annual NSCA Oklahoma clinic — a nearby regional CEU option. 2026 date is posted; full details pending.",who:"Typical: regional S&C coaches and educators.",url:"https://www.nsca.com/local/"},
+{title:"NSCA State & Regional Clinics (nationwide)",type:"Regional / Clinic",region:"National",disc:"S&C",start:"2026-06-06",dateText:"Rolling — spring & fall waves",location:"Various states (watch TX/AR/LA/NM postings)",lastHeld:"Ongoing 2025–2026",price:"Member ~$95–135 / Student ~$30",priceNum:95,ceu:"0.5–1.2 Category A",regOpens:"Per clinic (~10 days prior)",regCloses:"Day of event",status:"confirmed",syn:"Low-cost one- to two-day clinics hosted by state directors (e.g., Georgia Jun 6, Missouri Jun 12; fall wave Sep–Nov). Arkansas, Louisiana, and New Mexico clinics weren't posted yet — monitor this page for the 2026 fall cadence.",who:"Typical: regional collegiate & private-sector S&C coaches.",url:"https://www.nsca.com/local/"},
+{title:"CSCCa National Conference 2027 (Save the Date)",type:"National Conference",region:"National",disc:"S&C",start:"2027-05-04",dateText:"~Early May 2027 (location TBA)",location:"TBA",lastHeld:"May 4–6, 2026 — Fort Worth, TX",price:"Member $385 / $335 early bird (2026 ref.)",priceNum:385,ceu:"CSCCa CEUs (counts toward SCCC/MSCC)",regOpens:"~October 2026",regCloses:"Spring 2027",status:"forecast",syn:"The premier collegiate/professional S&C conference and home of the SCCC certification (practical exam co-locates on the conference Monday). 2026 was in Fort Worth; registration historically opens ~Oct 1, early-bird mid-Feb.",who:"Typical: collegiate/pro head S&C coaches and Master Strength & Conditioning Coaches.",url:"https://www.cscca.org/nationalconference"},
+{title:"ACSM Annual Meeting & World Congresses",type:"National Conference",region:"National",disc:"Sport Science",start:"2027-06-01",dateText:"June 1–4, 2027",location:"Indianapolis, IN",lastHeld:"May 26–29, 2026 — Salt Lake City, UT",price:"Tiered member/non-member/student (see ACSM)",priceNum:99999,ceu:"ACSM CECs",regOpens:"~Early 2027",regCloses:"On-site",status:"confirmed",syn:"The premier sports-medicine and exercise-science meeting — deep research across physiology, performance, and technology (wearables, AI). Best fit for the sport-science side of staff.",who:"Leading exercise scientists and sports-medicine researchers worldwide.",url:"https://acsm.org/events-general/annual-meeting/"},
+{title:"ACSM Health & Fitness Summit (with ACE)",type:"National Conference",region:"National",disc:"Sport Science",start:"2027-03-06",dateText:"March 6–8, 2027",location:"Hilton Chicago, IL",lastHeld:"2026 — online edition",price:"TBA",priceNum:99999,ceu:"ACSM CECs",regOpens:"~Late 2026",regCloses:"On-site",status:"confirmed",syn:"Practitioner-facing fitness-education summit, returning in person for 2027 jointly with ACE after a virtual 2026.",who:"Typical: health/fitness practitioners and exercise-is-medicine faculty.",url:"https://acsm.org/acsm-summit-home/"},
+{title:"ACSM Texas Chapter Annual Meeting (TACSM)",type:"Regional / Clinic",region:"Texas",disc:"Sport Science",start:"2027-02-25",dateText:"~Feb 25–26, 2027 (forecast)",location:"Waco Convention Center, Waco, TX",lastHeld:"Feb 26–27, 2026 — Waco, TX",price:"Pro member $125 / Student $45 (early, 2026)",priceNum:125,ceu:"Chapter CECs (self-report to NSCA)",regOpens:"~Dec 2026",regCloses:"On-site",status:"forecast",syn:"Texas regional ACSM meeting with strong applied/sport-performance content (athlete monitoring, hydration, heat, RED-S). Centrally located in Waco — very low travel.",who:"2026 incl. Andy Galpin, Drew Gonzalez, Yasuki Sekiguchi (Texas Tech).",url:"https://texas.acsm.org/annual-meeting/"},
+{title:"ACSM Southeast Chapter Meeting (SEACSM)",type:"Regional / Clinic",region:"South",disc:"Sport Science",start:"2027-02-18",dateText:"~Mid-to-late February 2027 (forecast)",location:"Southeast US (2026 = Greenville, SC)",lastHeld:"Feb 26–28, 2026 — Greenville, SC",price:"Member/student tiers (see chapter)",priceNum:99999,ceu:"ACSM CECs",regOpens:"~Nov 2026",regCloses:"On-site",status:"forecast",syn:"The largest ACSM regional chapter meeting (1,300+ in 2026); heavy applied physiology and student-research content.",who:"Typical: Southeast-region exercise-science faculty and students.",url:"https://southeast.acsm.org/annual-meeting/"},
+{title:"Huffines Institute Summit (Texas A&M)",type:"Regional / Clinic",region:"Texas",disc:"Sport Science",start:"2027-04-10",dateText:"~Spring 2027 (forecast)",location:"Texas A&M, College Station, TX",lastHeld:"Apr 10, 2026 — College Station (AI & Data Science theme)",price:"Free / low-cost (preregistration)",priceNum:0,ceu:"Academic symposium — verify CEU",regOpens:"~Spring 2027",regCloses:"Preregistration",status:"forecast",syn:"Texas A&M's own sport-medicine & human-performance summit, plus the Hilliard Distinguished Lecture. Zero travel for A&M staff and directly aligned with applied sport science.",who:"KSM/CSE faculty + invited researchers (2026 lecture: Dr. Reuben Burch).",url:"https://huffines-institute.tamu.edu/"},
+{title:"Aggie Performance Summit (Texas A&M)",type:"Regional / Clinic",region:"Texas",disc:"S&C",start:"2026-07-18",dateText:"Saturday, July 18, 2026",location:"Adam C. Sinn '00 Academic & Wellness Center, College Station, TX",lastHeld:"June 21, 2025 — College Station, TX",price:"$109 early-early / $120 early / $150 late / $200 walk-up · 50% off A&M students",priceNum:109,ceu:"7 BOC CEUs / 0.6 NSCA (CSCS & CSCCa pending)",regOpens:"Open now",regCloses:"Day-of (walk-up $200); capped at 150",status:"confirmed",syn:"Texas A&M's own one-day continuing-education clinic — zero travel for our staff — integrating performance & wellness across S&C, sports medicine, sport science, nutrition, and sport psychology, capped at 150 for an interactive feel. Includes a football complex tour. Hosted by A&M Sports Medicine & S&C (Huffines Institute is a sponsor).",who:"2026: Bo Sandoval (TAMU / ex-UFC PI), Blake McCall (TAMU football S&C — '1080 Sprint'), Melissa Schmitz (MSCC, Texas), Dr. Bonnie Gregory (ortho, Houston Rockets/Dash), Dr. Katie McInnis (sports RD), Dorcas Copa (PT, Houston Dash), Christi Garner-Bragg.",url:"https://12thman.com/sports/2024/10/8/aggie-performance-summit"},
+{title:"Sport Science Symposium (Sport Science Network)",type:"Regional / Clinic",region:"Texas",disc:"Sport Science",start:"2027-05-28",dateText:"~Late May 2027 (forecast)",location:"Brian Patterson Sports Performance Center, Houston, TX",lastHeld:"May 29–31, 2026 — Houston, TX (Rice)",price:"$450 (2026 rate)",priceNum:450,ceu:"1.2 NSCA (Cat A) / 5.5 CSCCa",regOpens:"~Spring 2027",regCloses:"Until capacity (~150–175)",status:"forecast",syn:"A practitioner-driven applied sport-science symposium (~150–175 attendees) bridging applied science and real-world practice across three days — assessments & speed, data & load, and movement science. Strong Texas A&M ties and Houston-based, so very low travel. The 2026 edition just wrapped; watch for the 2027 dates.",who:"Founders Marc Lewis & Adam Virgile; A&M's Scott Battley on the organizing committee; 2026 speakers incl. Bryan Mann (TAMU), Les Spellman, Patrick Ward (Seahawks), Duncan French (UFC PI), Nick Winkelman, Cam Josse.",url:"https://www.sportsciencenetwork.com/events/550e8400-e29b-41d4-a716-446655440000"},
+{title:"ASPDA Annual Conference (formerly CPSDA)",type:"National Conference",region:"National",disc:"Nutrition",start:"2027-05-20",dateText:"May 20–23, 2027",location:"Indianapolis, IN",lastHeld:"May 11–14, 2026 — New Orleans, LA",price:"Tiered by window (early bird Dec–Jan)",priceNum:99999,ceu:"11.75 CPEUs",regOpens:"~Dec 2026",regCloses:"~Apr 2027",status:"confirmed",syn:"The core conference for collegiate & pro sports dietitians ('Fueling Victory') — the most relevant nutrition event for an S&C staff collaborating with an RD.",who:"Typical: collegiate/pro sports RDs and performance-nutrition researchers.",url:"https://sportsrd.org/annual-conference"},
+{title:"SHPN Sports Nutrition Symposium (Virtual)",type:"Online / Course",region:"Online",disc:"Nutrition",start:"2027-03-16",dateText:"~March 2027 (forecast)",location:"Virtual",lastHeld:"Mar 16–20, 2026 — virtual",price:"Member/non-member virtual tiers",priceNum:99999,ceu:"CPEUs",regOpens:"~Jan 2027",regCloses:"~Mar 2027",status:"forecast",syn:"Academy of Nutrition & Dietetics' sports-nutrition virtual symposium (the SCAN successor). Convenient on-demand CPEU/education source.",who:"Typical: sports-nutrition RDs and researchers.",url:"https://www.shpndpg.org/"},
+{title:"NATA Clinical Symposia & AT Expo",type:"National Conference",region:"National",disc:"Sports Med / AT",start:"2026-06-29",dateText:"June 29 – July 2, 2026 · 2027: New Orleans",location:"Philadelphia, PA (2027 New Orleans, LA)",lastHeld:"June 2025",price:"Tiered (see NATA)",priceNum:99999,ceu:"BOC CEUs",regOpens:"Open",regCloses:"On-site",status:"confirmed",syn:"The national athletic-training conference — relevant to S&C via return-to-play, rehab-to-performance, and force-plate decision-making tracks.",who:"Typical: athletic-training clinicians and researchers.",url:"https://convention.nata.org/"},
+{title:"SWATA Annual Clinical Symposium",type:"Regional / Clinic",region:"Texas",disc:"Sports Med / AT",start:"2026-07-20",dateText:"July 20–24, 2026",location:"Waco Convention Center, Waco, TX",lastHeld:"~July 2025",price:"Member/student tiers (see SWATA)",priceNum:99999,ceu:"BOC CEUs",regOpens:"Open (events.swata.org)",regCloses:"On-site",status:"confirmed",syn:"The Texas-region athletic-training symposium (NATA District 6) — strong in-state networking with sports-medicine staff and performance-relevant clinical sessions.",who:"Typical: TX/AR athletic-training clinicians.",url:"https://www.swata.org/committees/convention/"},
+{title:"Sportsmith Return to Play Conference",type:"National Conference",region:"National",disc:"Sports Med / AT",start:"2026-06-26",dateText:"June 26–28, 2026",location:"Intuit Dome, Los Angeles, CA",lastHeld:"2025 — UK/online",price:"Tiered (Tickettailor)",priceNum:99999,ceu:"Verify (rehab/ATC content)",regOpens:"Open",regCloses:"Until sold out",status:"confirmed",syn:"Focused conference bridging S&C and sports medicine on lower-limb reconditioning and return-to-play decision-making. Co-located with Sportsmith's Strength & Power event.",who:"Typical: PTs, sports-med, and reconditioning specialists.",url:"https://www.sportsmith.co/events/sportsmith-return-to-play-conference/"},
+{title:"Sportsmith Strength & Power Conference",type:"National Conference",region:"National",disc:"Sport Science",start:"2026-06-26",dateText:"June 26–28, 2026",location:"Intuit Dome, Los Angeles, CA",lastHeld:"2025 — Manchester, UK",price:"Tiered (Tickettailor)",priceNum:99999,ceu:"Verify",regOpens:"Open",regCloses:"Until sold out",status:"confirmed",syn:"High-level applied strength/power and sport-science conference making a major US push at the Clippers' new arena — ~15 leading practitioners, strong on data and monitoring.",who:"International roster of pro-sport practitioners and sport scientists.",url:"https://www.sportsmith.co/events/sportsmith-strength-power/"},
+{title:"Perform Better Summit — Chicago",type:"National Conference",region:"National",disc:"S&C",start:"2026-06-18",dateText:"June 18–20, 2026",location:"Chicago, IL",lastHeld:"2025 (3-city series)",price:"~$399–$549 (3-Day Pass)",priceNum:450,ceu:"NSCA / BOC CEUs",regOpens:"Open",regCloses:"Until capacity",status:"confirmed",syn:"The industry's largest applied functional-training gathering — lecture + hands-on tracks with many of the field's top coaches and clinicians.",who:"Rotating faculty (past: Boyle, Cook, Verstegen, Cressey).",url:"https://www.performbetter.com/3-day-functional-training-summits/"},
+{title:"Perform Better Summit — Long Beach",type:"National Conference",region:"National",disc:"S&C",start:"2026-07-09",dateText:"July 9–11, 2026",location:"Long Beach, CA",lastHeld:"2025 (3-city series)",price:"~$399–$549 (3-Day Pass)",priceNum:450,ceu:"NSCA / BOC CEUs",regOpens:"Open",regCloses:"Until capacity",status:"confirmed",syn:"West-coast edition of the three-day Perform Better summit — lectures plus hands-on stations with leading coaches.",who:"Rotating faculty of strength, performance, and rehab professionals.",url:"https://www.performbetter.com/3-day-functional-training-summits/"},
+{title:"Perform Better Summit — Providence",type:"National Conference",region:"National",disc:"S&C",start:"2026-08-20",dateText:"August 20–22, 2026",location:"Providence, RI",lastHeld:"~Aug 2025 — Providence, RI",price:"~$399–$549 (3-Day Pass)",priceNum:450,ceu:"NSCA / BOC CEUs",regOpens:"Open",regCloses:"Until capacity",status:"confirmed",syn:"East-coast edition of the three-day Perform Better summit — practical, movement-focused programming with hands-on labs.",who:"Rotating faculty of strength, performance, and rehab professionals.",url:"https://www.performbetter.com/3-day-functional-training-summits/"},
+{title:"Perform Better One-Day Seminars",type:"Regional / Clinic",region:"National",disc:"S&C",start:"2026-09-01",dateText:"Rolling (spring & fall)",location:"Various US cities",lastHeld:"Throughout 2025",price:"~$129–$199",priceNum:149,ceu:"NSCA / BOC CEUs",regOpens:"Rolling",regCloses:"Per event",status:"tentative",syn:"Lower-cost single-day regional version of the summit content — good for staff who can't travel to a 3-day.",who:"Typically a single headliner or small panel.",url:"https://www.performbetter.com/seminars/"},
+{title:"Sorinex SummerStrong",type:"National Conference",region:"South",disc:"S&C",start:"2027-05-14",dateText:"~Mid-May 2027 (forecast)",location:"Sorinex HQ, Lexington, SC",lastHeld:"May 15–16, 2026 — Lexington, SC (SS19)",price:"~$300–$400 weekend pass (Eventbrite)",priceNum:350,ceu:"None advertised (culture/networking)",regOpens:"~Early 2027",regCloses:"Until capacity",status:"forecast",syn:"A weekend of lectures, open-gym lifting, and strength competitions drawing 600+ of the industry — heavily relationship- and old-school-strength oriented.",who:"2026 incl. David Ballou, Katie Guillory, Dan Pfaff, Nick Lavery.",url:"https://www.summerstrong.com/schedule"},
+{title:"CVASPS — The Seminar",type:"National Conference",region:"South",disc:"S&C",start:"2026-07-18",dateText:"~July 2026 (forecast — announces late)",location:"Univ. of Richmond, Richmond, VA",lastHeld:"July 20–21, 2024 (2025 likely held)",price:"~$299",priceNum:299,ceu:"NSCA CEUs (historically)",regOpens:"~Spring (sells out, ~100–200 seats)",regCloses:"Until capacity",status:"forecast",syn:"Widely regarded as one of the best US con-ed seminars — intimate, discussion-driven, BBQ-and-roundtable format bridging S&C, sport science, and sports medicine. Site updates late; watch Instagram/X @cvasps.",who:"Rotating elite roster (past: Charlie Weingroff, Cam Josse, Mike Davis).",url:"https://cvasps.com/"},
+{title:"EliteFTS Sports Performance Summit",type:"National Conference",region:"National",disc:"S&C",start:"2026-09-15",dateText:"Forecast — irregular cadence (watch @elitefts)",location:"Columbus, OH (typical)",lastHeld:"Unconfirmed (recent years business-summit format)",price:"~$200–$300 (historical)",priceNum:250,ceu:"NSCA CEUs (historically)",regOpens:"Watch Q1 announcements",regCloses:"Per event",status:"forecast",syn:"Coaches-teaching-coaches summit in the conjugate/Westside lineage with strong networking. Cadence has been irregular — confirm via Instagram @elitefts, not the (stale) website.",who:"Historic: Buddy Morris, Joe Kenn, Mike Robertson, Joe DeFranco.",url:"https://www.elitefts.com/education/elitefts-sports-performance-training-summit"},
+{title:"SimpliFaster Clinics & Education",type:"Online / Course",region:"Online",disc:"S&C",start:"2026-06-15",dateText:"Rolling / on-demand",location:"Online + occasional clinics",lastHeld:"Ongoing",price:"Varies",priceNum:99999,ceu:"Verify",regOpens:"Ad hoc",regCloses:"—",status:"tentative",syn:"A major applied-S&C content publisher (articles, speaker Q&As) that also runs occasional live clinics. Best treated as an education/news source — watch X @simplifaster for live dates.",who:"Rotating S&C and speed authors.",url:"https://simplifaster.com/"},
+{title:"ALTIS Speed Summit",type:"National Conference",region:"National",disc:"Speed",start:"2026-06-12",dateText:"June 12–14, 2026",location:"Point Loma Nazarene Univ., San Diego, CA",lastHeld:"2025 — inaugural",price:"$295 general / $199 student (+$99 Fri intensives)",priceNum:295,ceu:"1.2 NSCA CEUs (Category A)",regOpens:"Open now",regCloses:"Until capacity",status:"confirmed",syn:"Question-driven summit at the intersection of speed, health, and performance, with field-based applied sessions. Strong collegiate and pro audience.",who:"Stu McMillan, Dan Pfaff, Les Spellman, Cam Josse, Molly Binetti, Dr. Matt Jordan, + more.",url:"https://altis.world/altis-speed-summit-2026/"},
+{title:"ALTIS Apprentice Coach Program (ACP)",type:"Certification",region:"National",disc:"Speed",start:"2026-12-09",dateText:"Dec 9–12, 2026 (multiple cohorts/yr)",location:"Paradise Valley CC, Phoenix, AZ",lastHeld:"Recurring 2025–2026",price:"$895 per participant",priceNum:895,ceu:"Experiential apprenticeship",regOpens:"Open (limited seats)",regCloses:"Per cohort",status:"confirmed",syn:"Four days embedded with ALTIS coaches — fly-on-the-wall access to live track/strength/therapy sessions plus daily presentations and roundtables.",who:"Dan Pfaff, Stuart McMillan, Kevin Tyler, Andreas Behm.",url:"https://altis.world/in-person-education/apprentice-coach-program/"},
+{title:"ALTIS Team Speed Coach Certification",type:"Certification",region:"Online",disc:"Speed",start:"2026-04-13",dateText:"Cohorts (~Apr start; 6-month guided)",location:"Online (guided cohort)",lastHeld:"Prior cohorts 2025–2026",price:"See ALTIS (cohort tuition)",priceNum:99999,ceu:"Verify",regOpens:"Pre-cohort enrollment",regCloses:"Per cohort",status:"tentative",syn:"Structured certification translating ALTIS sprint methodology to team-sport coaches over a guided 6-month program.",who:"Stu McMillan, Danny Foley, Les Spellman.",url:"https://altis.world/team-speed-coach-certification/"},
+{title:"ALTIS Foundation Course (Online)",type:"Online / Course",region:"Online",disc:"Speed",start:"2026-06-03",dateText:"Self-paced, year-round",location:"Online",lastHeld:"Continuously available",price:"Per course (Performance Trinity bundle)",priceNum:99999,ceu:"Verify per course",regOpens:"Always open",regCloses:"—",status:"confirmed",syn:"ALTIS's flagship digital education — foundational sprint/speed and performance-therapy frameworks; common groundwork before the in-person Apprentice program.",who:"ALTIS faculty.",url:"https://altis.world/digital-education/altis-performance-trinity/"},
+{title:"Track Football Consortium — Feed the Cats (Dallas)",type:"Regional / Clinic",region:"Texas",disc:"Speed",start:"2027-01-25",dateText:"~Late Jan 2027 (TFC-Dallas) — winter series",location:"Dallas, TX (multi-city series)",lastHeld:"2025–26 winter clinic season",price:"Early bird ~$100",priceNum:100,ceu:"Coaching clinic (verify)",regOpens:"Fall–winter",regCloses:"Per clinic",status:"forecast",syn:"Tony Holler's sprint-based, record-and-rank 'Feed the Cats' philosophy — popular with HS and collegiate speed/football staff. The Dallas stop is the most Texas-relevant in the winter series.",who:"Tony, Alec & Quinn Holler + TFC speakers.",url:"http://trackfootballconsortium.com/feed-the-cats-seminar/"},
+{title:"Les Spellman / Spellman Performance Clinics",type:"Regional / Clinic",region:"National",disc:"Speed",start:"2026-05-29",dateText:"Per host event (rolling)",location:"National (TX: speaking at Rice, Houston)",lastHeld:"Ongoing 2025–2026 clinics/camps",price:"Varies (Master Class online)",priceNum:99999,ceu:"Verify",regOpens:"Rolling",regCloses:"Per event",status:"tentative",syn:"Sprint/acceleration specialist (NFL/Olympic/collegiate); 'Sprintvert' speed-and-vertical content and clinics. Appears at TX events including Rice. Watch Instagram @spellmanperformance.",who:"Les Spellman.",url:"https://spellmanperformance.com/courses"},
+{title:"Lee Taft Multi-Directional Speed",type:"Online / Course",region:"Online",disc:"Speed",start:"2026-06-03",dateText:"Online cert year-round; workshops on demand",location:"Online + host-site workshops",lastHeld:"Recurring 2025–2026",price:"Per title; workshops by arrangement",priceNum:99999,ceu:"Verify",regOpens:"Rolling",regCloses:"—",status:"confirmed",syn:"The reference brand for multi-directional / change-of-direction speed for team sports — online certification plus bookable workshops and retreats.",who:"Lee Taft.",url:"https://leetaft.com/"},
+{title:"Just Fly Sports Performance (Online)",type:"Online / Course",region:"Online",disc:"Speed",start:"2026-06-03",dateText:"Online courses + podcast (rolling)",location:"Online",lastHeld:"Continuous",price:"Per course",priceNum:99999,ceu:"Verify per course",regOpens:"Always open",regCloses:"—",status:"confirmed",syn:"Joel Smith's plyometric/speed/elastic-strength education and the widely-followed Just Fly Performance Podcast — a strong online learning and idea source.",who:"Joel Smith.",url:"https://www.just-fly-sports.com/"},
+{title:"EXOS Performance Mentorship (Phases 1–3)",type:"Certification",region:"National",disc:"S&C",start:"2026-09-01",dateText:"Rolling 4-day mentorships, 2026–2027",location:"EXOS sites (Phoenix, AZ + others) + intl.",lastHeld:"Recurring 2025–2026",price:"Per phase — see EXOS Education",priceNum:99999,ceu:"Commonly CEU-eligible (verify)",regOpens:"Rolling enrollment",regCloses:"Per cohort",status:"confirmed",syn:"Progressive mentorship in the EXOS training system used with top athletes — Phase 1 fundamentals through Phase 3 advanced program design and sport-science integration.",who:"EXOS performance faculty.",url:"https://www.teamexos.com/education"},
+{title:"FMS — Functional Movement Systems (L1 & L2)",type:"Certification",region:"National",disc:"Method / Movement",start:"2026-06-03",dateText:"Rolling (online, virtual-live, in-person)",location:"Various US cities + online",lastHeld:"Continuous",price:"Per level (online vs. live differ)",priceNum:99999,ceu:"NSCA / BOC / ACE CEUs",regOpens:"Rolling",regCloses:"Per session",status:"confirmed",syn:"The standard movement-screen certification — widely used in collegiate settings for screening and corrective programming.",who:"FMS faculty (Gray Cook, Lee Burton lineage).",url:"https://www.functionalmovement.com/events"},
+{title:"PRI — Postural Restoration Institute",type:"Certification",region:"National",disc:"Method / Movement",start:"2026-06-05",dateText:"Year-round — 2026 calendar live (multi-date)",location:"Various US host sites + livestream",lastHeld:"Continuous 2025–2026",price:"~$600–$700 per in-person course",priceNum:650,ceu:"BOC / PT CEUs (NSCA varies)",regOpens:"Open",regCloses:"Per course",status:"confirmed",syn:"Breathing/posture/asymmetry-based system bridging rehab and performance — increasingly used by collegiate performance and sports-med staff.",who:"PRI faculty.",url:"https://www.posturalrestoration.com/community/2026-course-calendar/"},
+{title:"DNS — Dynamic Neuromuscular Stabilization (Dallas)",type:"Certification",region:"Texas",disc:"Method / Movement",start:"2026-10-24",dateText:"Dallas: Oct 24–25, 2026 (multi-city series)",location:"Dallas, TX + other US cities",lastHeld:"Continuous",price:"Per course",priceNum:99999,ceu:"PT/ATC/chiro CEUs (verify NSCA)",regOpens:"Open",regCloses:"Per course",status:"confirmed",syn:"Prague-school developmental-kinesiology / motor-control system applied to rehab and sport performance. A Dallas 'Basic B' course makes it accessible in-state.",who:"Prague School faculty.",url:"https://www.rehabps.com/"},
+{title:"Reflexive Performance Reset (RPR) L1 & L2",type:"Online / Course",region:"Online",disc:"Method / Movement",start:"2026-06-03",dateText:"Online L1 year-round; in-person on demand",location:"Online + on-demand in-person",lastHeld:"Continuous",price:"Per level (online via Thinkific)",priceNum:99999,ceu:"Verify",regOpens:"Rolling",regCloses:"—",status:"confirmed",syn:"Breathing + reflexive 'reset' activation system; a popular pre-training protocol in S&C settings.",who:"Cal Dietz / RPR instructors.",url:"https://www.reflexiveperformance.com/"},
+{title:"Triphasic Training (Cal Dietz)",type:"Online / Course",region:"Online",disc:"Method / Movement",start:"2026-06-03",dateText:"Online courses year-round",location:"Online",lastHeld:"Continuous",price:"Per course / manual",priceNum:99999,ceu:"Verify",regOpens:"Rolling",regCloses:"—",status:"confirmed",syn:"Eccentric/isometric/concentric triphasic methodology — widely referenced in collegiate strength programming; education is primarily digital.",who:"Cal Dietz (Univ. of Minnesota).",url:"https://triphasictraining.com/"},
+{title:"Westside Barbell — Special Strengths / Conjugate",type:"Certification",region:"National",disc:"Method / Movement",start:"2027-04-19",dateText:"On-site seminar ~spring (forecast); cert online",location:"Westside Barbell, Columbus, OH + online",lastHeld:"Apr 19, 2025 — Columbus, OH",price:"Certificate packages + seminar fees",priceNum:99999,ceu:"Methodology cert (not NSCA-focused)",regOpens:"Online open; seminar ad hoc",regCloses:"Per event",status:"forecast",syn:"Conjugate/Westside special-strengths certification and live seminars — foundational max-effort/dynamic-effort education. Watch Facebook @WestsideBarbellStrong for the next on-site date.",who:"Westside coaching staff (Louie Simmons legacy).",url:"https://www.westside-barbell.com/pages/seminars"},
+{title:"VALD — Workshops, Summits & Academy",type:"Online / Course",region:"Online",disc:"Sport Science",start:"2026-06-03",dateText:"Rolling (events.vald.com)",location:"US workshops + online Academy",lastHeld:"Continuous 2025–2026",price:"Free and paid options",priceNum:0,ceu:"Verify per session",regOpens:"Rolling",regCloses:"Per event",status:"confirmed",syn:"A continuous calendar of local workshops, 1–2 day practitioner's summits, and the tiered VALD Academy (ForceDecks, NordBord, etc.). Check the events hub for US dates — they rarely post far ahead.",who:"Leading clinicians/practitioners + VALD staff.",url:"https://events.vald.com/"},
+{title:"Catapult — Conferences & Webinars",type:"Online / Course",region:"National",disc:"Sport Science",start:"2026-06-03",dateText:"Invite-only confs + open webinars (rolling)",location:"US + UK + online",lastHeld:"2025 — Football Performance Conf.; London",price:"Webinars free; conferences invite-only",priceNum:0,ceu:"Verify",regOpens:"Rolling / invite",regCloses:"Per event",status:"tentative",syn:"Catapult (which owns Perch) runs invite-only football/sport-performance conferences plus an open webinar library and 'Sport Science Integration' education for high-performance staff.",who:"Coaches and sport scientists; product workshops.",url:"https://www.catapult.com/"},
+{title:"Perch (VBT) E-Learning & Webinars",type:"Online / Course",region:"Online",disc:"Sport Science",start:"2026-06-03",dateText:"On-demand / rolling",location:"Online (perch.fit)",lastHeld:"Continuous 2025–2026",price:"Course access; some free webinars",priceNum:0,ceu:"Verify (course partnership)",regOpens:"Always open",regCloses:"—",status:"confirmed",syn:"A structured VBT / weight-room-technology e-learning course plus a webinar library (HS athletes, Olympic lifting, ATs) — directly relevant if you run camera-based VBT.",who:"Perch staff + VBT educators.",url:"https://www.perch.fit/webinars/perch-e-learning-course"},
+{title:"Hawkin Dynamics — Force Measurement Course",type:"Online / Course",region:"Online",disc:"Sport Science",start:"2026-06-03",dateText:"On-demand / rolling webinars",location:"Online (learning.hawkindynamics.com)",lastHeld:"Continuous",price:"Free (~7-hr course)",priceNum:0,ceu:"Verify",regOpens:"Always open",regCloses:"—",status:"confirmed",syn:"A free self-paced Force Measurement Course plus an ongoing webinar library on force-plate data interpretation and application — strong free CE-style content.",who:"Daniel Hicker, Eric Renaghan, Dr. Jason Lake + guests.",url:"https://www.hawkindynamics.com/forcecourse"},
+{title:"TeamBuildr Education & Webinars",type:"Online / Course",region:"Online",disc:"Sport Science",start:"2026-06-03",dateText:"Rolling webinars + self-paced library",location:"Online + conference booths",lastHeld:"Continuous 2025–2026",price:"Free",priceNum:0,ceu:"Verify",regOpens:"Rolling",regCloses:"—",status:"confirmed",syn:"Free coach-education webinars and a self-paced resource library from the S&C software maker (sport-science hub, wearable/fatigue data, programming).",who:"TeamBuildr staff + guest coaches.",url:"https://www.teambuildr.com/webinars"},
+{title:"Output Sports — Webinars & Workshops",type:"Online / Course",region:"Online",disc:"Sport Science",start:"2026-06-03",dateText:"Rolling / on-demand",location:"Online",lastHeld:"Continuous 2025–2026",price:"Free",priceNum:0,ceu:"Verify",regOpens:"Rolling",regCloses:"—",status:"confirmed",syn:"Free webinar/workshop series on applied testing and monitoring with the Output wearable platform (sprint-based training, pre-season monitoring, VBT).",who:"Output staff + practitioners.",url:"https://www.outputsports.com/webinars"},
+{title:"USA Weightlifting — Level 1 Coaching Course (TX)",type:"Certification",region:"Texas",disc:"Weightlifting",start:"2026-06-03",dateText:"Rolling — frequent TX dates",location:"Austin / Houston / DFW hosts",lastHeld:"Multiple TX courses in 2025",price:"$549 members / $648 new (incl. membership)",priceNum:549,ceu:"NASM/ACSM CECs; self-report to NSCA",regOpens:"Rolling (Sport80 calendar)",regCloses:"Per course",status:"confirmed",syn:"The gold-standard entry Olympic-lifting coaching cert — hands-on snatch and clean & jerk teaching progressions. Offered across Texas year-round (13-hr weekend).",who:"USAW-certified instructors (e.g., Daniel Camargo).",url:"https://www.usaweightlifting.org/usaw-level-1-coaches-course"},
+{title:"USA Weightlifting — Level 2 Coaching Course",type:"Certification",region:"National",disc:"Weightlifting",start:"2026-09-01",dateText:"Rolling (periodic TX in-person + online)",location:"Various + online",lastHeld:"Continuous 2025",price:"Higher tier than L1 (L1 prerequisite)",priceNum:99999,ceu:"NASM/ACSM CECs; self-report",regOpens:"Rolling (Sport80)",regCloses:"Per course",status:"confirmed",syn:"Advanced Olympic-lifting coaching cert building on Level 1 — programming and advanced technique correction.",who:"Senior USAW instructors.",url:"https://www.usaweightlifting.org/usaw-level-2"},
+{title:"USAW VIRUS Series 2 + Texas-Oklahoma WSO (Fort Worth)",type:"Regional / Clinic",region:"Texas",disc:"Weightlifting",start:"2026-09-10",dateText:"September 10–13, 2026",location:"Fort Worth Convention Center, TX",lastHeld:"Sept 2025 — Fort Worth (3rd straight yr)",price:"Spectating free/low; athlete reg from $145",priceNum:0,ceu:"Observation + official credentialing",regOpens:"Opens Jan 1, 2026",regCloses:"Athlete reg ~Aug 13, 2026",status:"confirmed",syn:"A major national Olympic-lifting meet held in-state (Fort Worth through 2027), bundled with the Texas-Oklahoma WSO Championships — strong local networking and live technical exposure.",who:"Top national lifters and coaches.",url:"https://www.usaweightlifting.org/national-events"},
+{title:"USA Powerlifting — Coaching Certification (TX)",type:"Certification",region:"Texas",disc:"Weightlifting",start:"2026-06-03",dateText:"Rolling — TX RTC hosts",location:"Texas Strength Systems (Houston) + others; online Fundamentals",lastHeld:"Continuous 2025",price:"Fundamentals $150 (online); L1/L2 $495 each",priceNum:150,ceu:"USAPL cert credit; self-report",regOpens:"Rolling",regCloses:"Per course",status:"confirmed",syn:"Powerlifting-specific coaching cert — Level 1 (state-level coaching) and Level 2 (national-level programming and meet strategy). Texas Strength Systems in Houston is the primary in-state hub.",who:"USAPL-approved instructors.",url:"https://coaching.usapowerlifting.com/upcoming-clinics/"},
+{title:"NHSSCA Texas State Clinic",type:"Regional / Clinic",region:"Texas",disc:"Scholastic",start:"2026-07-18",dateText:"July 18, 2026",location:"St. Thomas HS, Houston, TX",lastHeld:"July 19, 2025 — San Antonio, TX",price:"$35–$100 (tiered)",priceNum:35,ceu:"NHSSCA CEU-eligible (self-report)",regOpens:"~Spring 2026",regCloses:"Just before event",status:"confirmed",syn:"The single most TX-specific S&C clinic — a one-day immersive of Olympic-lift progressions, power development, and program-building plus a coaches' roundtable. (Texas has no separate 'THSSCA' — this is it.)",who:"TX HS/college S&C coaches (2025: Bret Huth, Jeremy Walden).",url:"https://nhssca.us/event/2026-nhssca-texas-state-clinic/"},
+{title:"NHSSCA National Conference (NatCon)",type:"National Conference",region:"National",disc:"Scholastic",start:"2026-06-19",dateText:"June 19–20, 2026",location:"Muskego HS, Muskego, WI",lastHeld:"2025 (2024 was in Texas)",price:"$25–$399 (tiered)",priceNum:25,ceu:"NHSSCA CEU-eligible (self-report)",regOpens:"Open now",regCloses:"During event",status:"confirmed",syn:"The 'Super Bowl of HS S&C' — two days of lectures, hands-on weight-room sessions, and heavy networking. Watch for rotation years when it returns to Texas.",who:"~14 presenters; 4 lectures + 8 hands-on sessions.",url:"https://nhssca.us/event/2026-nhssca-national-conference-10-year-anniversary/"},
+{title:"THSCA Coaching School & Convention",type:"National Conference",region:"Texas",disc:"Scholastic",start:"2026-07-19",dateText:"July 19–21, 2026 · 2027: San Antonio",location:"George R. Brown Conv. Center, Houston, TX",lastHeld:"July 20–22, 2025 — San Antonio, TX",price:"Membership + convention reg (~$50–$100)",priceNum:75,ceu:"250+ hrs incl. UIL CCP credit",regOpens:"Open now",regCloses:"On-site",status:"confirmed",syn:"The largest coaching convention in Texas (18,000+ attendees) with a dedicated S&C / sport-performance session track and a huge exhibit hall.",who:"250+ hours across all sports incl. an S&C track.",url:"https://www.thsca.com/convention/"},
+{title:"TGCA Summer Clinic",type:"Regional / Clinic",region:"Texas",disc:"Scholastic",start:"2026-07-16",dateText:"July 16–18, 2026",location:"Arlington, TX",lastHeld:"July 14–17, 2025 — Arlington, TX",price:"Membership + clinic reg (~$35–$70)",priceNum:50,ceu:"Coaching-education sessions (CCP varies)",regOpens:"Spring–summer 2026",regCloses:"On-site",status:"confirmed",syn:"Large summer clinic for girls'-sport coaches with sport-performance and strength sessions woven in — strong TX networking, low travel.",who:"Multi-sport coaches + S&C presenters.",url:"http://www.austintgca.com/summer_clinic/"},
+{title:"Performance Course — Coaches Summit",type:"Regional / Clinic",region:"Texas",disc:"Scholastic",start:"2026-06-20",dateText:"2026 (confirm date/venue)",location:"Texas",lastHeld:"Prior annual summits",price:"FREE (partner-sponsored; limited spots)",priceNum:0,ceu:"Practical PD (CEU varies)",regOpens:"Open (limited capacity)",regCloses:"Until full",status:"tentative",syn:"A free, hands-on summit for HS strength and sport coaches from this TX-based education company — practical weight-room education plus networking and meals. High value-to-cost.",who:"Elite HS/college S&C coaches (hands-on sessions).",url:"https://presentation.performancecourse.com/2026-coaches-summit-1765990216022.html"},
+{title:"NSCA Recertification Cycle (CSCS/CSPS/TSAC-F/CPSS)",type:"Certification",region:"Online",disc:"S&C",start:"2026-12-31",dateText:"Current cycle deadline: Dec 31, 2026",location:"Report online at nsca.com",lastHeld:"Cycle 2024–2026",price:"Recert fee + CEU costs",priceNum:0,ceu:"Need 6.0 CEUs (2+ of categories A–D)",regOpens:"Ongoing",regCloses:"Dec 31, 2026",status:"confirmed",syn:"Action item, not an event: the current NSCA reporting cycle requires 6.0 CEUs by Dec 31, 2026, with one submission covering multiple NSCA credentials. Use the events above to close the gap (online quizzes count).",who:"—",url:"https://www.nsca.com/certification/recertification/"},
+{title:"CSCCa SCCC Certification (Written + Practical)",type:"Certification",region:"National",disc:"S&C",start:"2027-05-03",dateText:"Written ~Mar–May; practical at National Conf.",location:"PSI centers (written) + conference (practical)",lastHeld:"2026 cycle — practical at Fort Worth",price:"Exam fees (see CSCCa)",priceNum:99999,ceu:"The credential itself (640-hr practicum req.)",regOpens:"Tied to exam windows",regCloses:"Spring",status:"forecast",syn:"The NCCA-accredited collegiate credential — 640-hour practicum + written exam + live practical before a Master S&C Coach panel. Required for D-I full-time S&C coaches. The practical co-locates with the CSCCa National Conference each spring.",who:"Master Strength & Conditioning Coach panel.",url:"https://www.cscca.org/"}
+];
+
+const state={type:[],disc:[],region:[],status:[],q:"",sort:"date",view:"list",calY:2026,calM:5};
+const MULTI=new Set(["type","disc","region","status"]);
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const grid=document.getElementById('grid');
+const empty=document.getElementById('empty');
+const countEl=document.getElementById('count');
+
+function buildStats(){
+  const total=EVENTS.length;
+  const confirmed=EVENTS.filter(e=>e.status==="confirmed").length;
+  const tx=EVENTS.filter(e=>e.region==="Texas").length;
+  const fc=EVENTS.filter(e=>e.status==="forecast").length;
+  const stats=[["Opportunities",total],["Confirmed",confirmed],["Texas / in-state",tx],["Forecast to watch",fc]];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="n">${s[1]}</div><div class="l">${s[0]}</div></div>`).join('');
+}
+function matchRegion(e){
+  if(!state.region.length)return true;
+  return state.region.some(r=> r==="South" ? (e.region==="South"||e.region==="Texas") : e.region===r);
+}
+function getFiltered(){
+  return EVENTS.filter(e=>{
+    if(state.type.length&&!state.type.includes(e.type))return false;
+    if(state.disc.length&&!state.disc.includes(e.disc))return false;
+    if(state.status.length&&!state.status.includes(e.status))return false;
+    if(!matchRegion(e))return false;
+    if(state.q){
+      const hay=(e.title+e.location+e.syn+e.who+e.dateText+(e.lastHeld||"")+e.disc).toLowerCase();
+      if(!hay.includes(state.q.toLowerCase()))return false;
+    }
+    return true;
+  });
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function isOngoing(e){return /rolling|year-round|on demand|on-demand|self-paced|ongoing|always open/i.test(e.dateText);}
+function tagClass(t){return t==="National Conference"?"national":t==="Online / Course"?"online":t==="Certification"?"cert":"regional";}
+function tagText(t){return t==="National Conference"?"National":t==="Online / Course"?"Online":t==="Certification"?"Cert":"Regional";}
+function statusText(s){return s==="confirmed"?"Confirmed":s==="forecast"?"Forecast":"Tentative";}
+function cardHTML(e){
+  const hist = e.lastHeld?`<span class="k">Last held</span><span class="v hist">${e.lastHeld}</span>`:"";
+  return `<div class="card is-${e.status}">
+    <div class="top">
+      <div class="tags"><span class="tag ${tagClass(e.type)}">${tagText(e.type)}</span><span class="tag disc">${e.disc}</span></div>
+      <span class="status ${e.status}"><span class="sdot"></span>${statusText(e.status)}</span>
+    </div>
+    <div class="ctitle">${e.title}</div>
+    <div class="cwhen">${e.dateText}</div>
+    <div class="meta">
+      <span class="k">Location</span><span class="v">${e.location}</span>
+      ${hist}
+      <span class="k">Price</span><span class="v">${e.price}</span>
+      <span class="k">CEUs</span><span class="v">${e.ceu||"—"}</span>
+      <span class="k">Registration</span><span class="v">${e.regOpens} · <span style="color:var(--med-gray)">closes:</span> ${e.regCloses}</span>
+    </div>
+    <div class="syn">${e.syn}</div>
+    <div class="who"><b>Presenting:</b> ${e.who}</div>
+    <div class="cfoot"><a class="btn" href="${e.url}" target="_blank" rel="noopener">Event details →</a></div>
+  </div>`;
+}
+function render(){
+  const base=getFiltered();
+  countEl.innerHTML=`Showing <b>${base.length}</b> of ${EVENTS.length} opportunities`;
+  const cal=state.view==="calendar";
+  grid.style.display=cal?"none":"";
+  document.getElementById('calendar').style.display=cal?"":"none";
+  document.getElementById('sort').style.display=cal?"none":"";
+  if(cal){empty.style.display="none";renderCalendar(base);return;}
+  const list=base.slice().sort((a,b)=>{
+    if(state.sort==="date")return a.start.localeCompare(b.start);
+    if(state.sort==="date-desc")return b.start.localeCompare(a.start);
+    if(state.sort==="price")return a.priceNum-b.priceNum;
+    if(state.sort==="title")return a.title.localeCompare(b.title);
+    return 0;
+  });
+  empty.style.display=list.length?"none":"block";
+  grid.innerHTML=list.map(cardHTML).join('');
+}
+function renderCalendar(base){
+  const y=state.calY,m=state.calM;
+  document.getElementById('calTitle').textContent=MONTHS[m]+" "+y;
+  document.getElementById('calDow').innerHTML=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dowc">${d}</div>`).join('');
+  const byDay={};
+  base.filter(e=>!isOngoing(e)).forEach(e=>{
+    const p=e.start.split('-').map(Number);
+    if(p[0]===y&&p[1]-1===m){(byDay[p[2]]=byDay[p[2]]||[]).push(e);}
+  });
+  const startDow=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const t=new Date();
+  let cells="";
+  for(let i=0;i<startDow;i++)cells+=`<div class="cal-cell blank"></div>`;
+  for(let d=1;d<=days;d++){
+    const evs=byDay[d]||[];
+    const isToday=(y===t.getFullYear()&&m===t.getMonth()&&d===t.getDate());
+    const chips=evs.map(e=>`<a class="cal-ev ${e.status}" href="${e.url}" target="_blank" rel="noopener" title="${esc((e.status==="forecast"?"~":"")+e.title+" — "+e.dateText)}">${esc(e.title)}</a>`).join('');
+    cells+=`<div class="cal-cell${isToday?' today':''}"><div class="cal-daynum">${d}</div><div class="cal-evs">${chips}</div></div>`;
+  }
+  document.getElementById('calGrid').innerHTML=cells;
+  const ongoing=base.filter(isOngoing);
+  const og=document.getElementById('calOngoing');
+  if(ongoing.length){
+    og.style.display="";
+    og.innerHTML=`<div class="cal-og-head">Rolling / online / on-demand — no fixed date (${ongoing.length})</div>`+
+      `<div class="cal-og-list">`+ongoing.map(e=>`<a class="cal-og-item ${e.status}" href="${e.url}" target="_blank" rel="noopener" title="${esc(e.dateText)}">${esc(e.title)}</a>`).join('')+`</div>`;
+  }else{og.style.display="none";og.innerHTML="";}
+}
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const f=c.dataset.f,v=c.dataset.v;
+    if(MULTI.has(f)){
+      const allChip=document.querySelector(`.chip[data-f="${f}"][data-v="all"]`);
+      if(v==="all"){
+        state[f]=[];
+        document.querySelectorAll(`.chip[data-f="${f}"]`).forEach(x=>x.classList.remove('active'));
+        allChip.classList.add('active');
+      }else{
+        const arr=state[f],i=arr.indexOf(v);
+        if(i>=0){arr.splice(i,1);c.classList.remove('active');}
+        else{arr.push(v);c.classList.add('active');}
+        allChip.classList.toggle('active',arr.length===0);
+      }
+    }else{
+      document.querySelectorAll(`.chip[data-f="${f}"]`).forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');state[f]=v;
+    }
+    render();
+  });
+});
+document.getElementById('search').addEventListener('input',e=>{state.q=e.target.value;render();});
+document.getElementById('sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
+document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.vbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');state.view=b.dataset.view;render();
+}));
+document.getElementById('calPrev').addEventListener('click',()=>{if(--state.calM<0){state.calM=11;state.calY--;}render();});
+document.getElementById('calNext').addEventListener('click',()=>{if(++state.calM>11){state.calM=0;state.calY++;}render();});
+document.getElementById('calToday').addEventListener('click',()=>{const t=new Date();state.calY=t.getFullYear();state.calM=t.getMonth();render();});
+(function(){const t=new Date();if(t.getFullYear()>=2026){state.calY=t.getFullYear();state.calM=t.getMonth();}})();
+buildStats();render();
+</script>
+</body>
+</html>
