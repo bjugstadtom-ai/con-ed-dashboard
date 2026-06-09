@@ -423,4 +423,8 @@ document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
 document.getElementById('calPrev').addEventListener('click',()=>{if(--state.calM<0){state.calM=11;state.calY--;}render();});
 document.getElementById('calNext').addEventListener('click',()=>{if(++state.calM>11){state.calM=0;state.calY++;}render();});
 document.getElementById('calToday').addEventListener('click',()=>{const t=new Date();state.calY=t.getFullYear();state.calM=t.getMonth();render();});
-(function(){const t=new Date();if(t.getFullYear()>=2026){state.calY=t.getF
+(function(){const t=new Date();if(t.getFullYear()>=2026){state.calY=t.getFullYear();state.calM=t.getMonth();}})();
+buildStats();render();
+</script>
+</body>
+</html>
