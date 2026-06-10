@@ -406,4 +406,26 @@ document.querySelectorAll('.chip').forEach(c=>{
         const arr=state[f],i=arr.indexOf(v);
         if(i>=0){arr.splice(i,1);c.classList.remove('active');}
         else{arr.push(v);c.classList.add('active');}
-        allChip.classList.toggle('active',ar
+        allChip.classList.toggle('active',arr.length===0);
+      }
+    }else{
+      document.querySelectorAll(`.chip[data-f="${f}"]`).forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');state[f]=v;
+    }
+    render();
+  });
+});
+document.getElementById('search').addEventListener('input',e=>{state.q=e.target.value;render();});
+document.getElementById('sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
+document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.vbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');state.view=b.dataset.view;render();
+}));
+document.getElementById('calPrev').addEventListener('click',()=>{if(--state.calM<0){state.calM=11;state.calY--;}render();});
+document.getElementById('calNext').addEventListener('click',()=>{if(++state.calM>11){state.calM=0;state.calY++;}render();});
+document.getElementById('calToday').addEventListener('click',()=>{const t=new Date();state.calY=t.getFullYear();state.calM=t.getMonth();render();});
+(function(){const t=new Date();if(t.getFullYear()>=2026){state.calY=t.getFullYear();state.calM=t.getMonth();}})();
+buildStats();render();
+</script>
+</body>
+</html>
